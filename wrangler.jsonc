@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "museum-explorer",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "observability": { "enabled": true },
+  // 網頁（public/）和 API 同一支 Worker：只有 /api/*、/admin/*、/img/* 先進程式，其他直接回靜態檔
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/admin/*", "/img/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "museum-db", "database_id": "4955b5d1-1fb0-417a-ba69-84091da892b1" }
+  ],
+  // 文物照片（故宮低階圖 CC0，本站縮成 600／240 webp）
+  "r2_buckets": [{ "binding": "IMG", "bucket_name": "museum-img" }],
+  // 自訂網域：部署時 Cloudflare 自動建 DNS 與憑證（hunglun.com 在同一個帳號）
+  "routes": [{ "pattern": "museum.hunglun.com", "custom_domain": true }],
+  // 每月 1 日台灣 03:00（UTC 前一天 19:00）檢查 data.gov.tw 有沒有更新，有就 ntfy 通知（匯入在本機跑）
+  "triggers": { "crons": ["0 19 1 * *"] },
+  "vars": { "APP_VERSION": "0.1.0" }
+  // secrets（wrangler secret put）：NTFY_TOPIC、ADMIN_TOKEN
+}
