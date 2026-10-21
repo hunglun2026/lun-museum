@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>文物小百科｜故宮探險家</title>
+<meta name="description" content="依分類與朝代瀏覽國立故宮博物院的文物照片與說明，國小版附白話介紹。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/style.css?v=1">
+</head>
+<body data-page="artifact">
+<main>
+  <h1>📖 文物小百科</h1>
+  <p class="lead">挑一個分類或朝代，點文物看大圖和介紹。</p>
+  <div class="filters">
+    <div class="chips scroll" id="cats" aria-label="分類"></div>
+    <div class="chips scroll" id="grps" aria-label="朝代"></div>
+    <label class="chips"><input type="checkbox" id="all" style="width:22px;height:22px"> 也顯示還沒有照片的文物</label>
+  </div>
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"></div>
+  <p class="more"><button class="btn" id="more" hidden>載入更多</button></p>
+  <dialog id="dlg"><div class="dlg-in" id="dlgIn"></div></dialog>
+</main>
+<script src="/js/data.js?v=1"></script>
+<script src="/js/layout.js?v=1"></script>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/progress.js?v=1"></script>
+<script src="/js/p-artifact.js?v=1"></script>
+</body>
+</html>

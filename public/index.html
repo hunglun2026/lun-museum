@@ -1,5 +1,50 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex"><title>故宮探險家</title>
-<style>body{font-family:"Noto Sans TC",system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 16px;line-height:1.7;background:#faf7f2;color:#2b2b2b}</style>
-</head><body><h1>故宮探險家</h1><p>網站建置中，敬請期待。</p></body></html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>故宮探險家｜故宮文物教學網站</title>
+<meta name="description" content="用國立故宮博物院開放資料做的教學網站：10.9 萬件文物與 39.6 萬件清代檔案，猜朝代、排時間軸、印學習單。國小到高中三種難度，免註冊、免安裝。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/style.css?v=1">
+</head>
+<body data-page="home">
+<main>
+  <section class="hero">
+    <p class="lead" style="margin:0">國立故宮博物院開放資料 · 國小到高中</p>
+    <h1>走進故宮，<br><span data-stat="items">109,164</span> 件文物等你來探險</h1>
+    <p class="lead">看文物、猜朝代、排時間軸、查清代檔案。<br>不用註冊、不用安裝，打開就能上課。</p>
+    <p><a class="btn primary big" href="/artifact">開始探險 🏛️</a> <a class="btn big" href="/teacher">我是老師</a></p>
+  </section>
+
+  <h2>今天的展櫃</h2>
+  <p class="lead">每次打開都會換一批，點一下看介紹。</p>
+  <div class="grid" id="today"></div>
+
+  <h2>學習工具</h2>
+  <div class="cards">
+    <a class="tool" href="/artifact"><div class="ico">📖</div><h3>文物小百科</h3><p>依分類與朝代看照片和說明，國小版附白話介紹。</p><span class="tag">藝術・歷史</span></a>
+    <a class="tool" href="/search"><div class="ico">🔎</div><h3>典藏搜尋</h3><p>搜尋 10.9 萬件文物與 39.6 萬件清代檔案。</p><span class="tag">查找資料</span></a>
+    <a class="tool" href="/era"><div class="ico">🏺</div><h3>猜猜哪個朝代</h3><p>看照片猜朝代，高中要答出皇帝年號。還有 60 秒挑戰。</p><span class="tag">觀察與推理</span></a>
+    <a class="tool" href="/timeline"><div class="ico">📏</div><h3>朝代排排站</h3><p>把不同朝代的文物依先後排好，練出腦中的時間軸。</p><span class="tag">時間序列</span></a>
+    <a class="tool" href="/passport"><div class="ico">🎫</div><h3>探險護照</h3><p>看過的文物會蓋章，玩遊戲拿星星換徽章。</p><span class="tag">自主學習</span></a>
+    <a class="tool" href="/teacher"><div class="ico">🍎</div><h3>老師專區</h3><p>四個課程包、一鍵產生學習單、出題投影、搶答計分板。</p><span class="tag">備課好幫手</span></a>
+  </div>
+
+  <h2>老師 3 分鐘上手</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><div><b>先在右上角選難度</b>：國小、國中、高中，所有遊戲和學習單都會跟著換。</div></li>
+      <li><div><b>投影「猜猜哪個朝代」</b>，全班一起看、舉手搶答，不需要每人一台裝置。</div></li>
+      <li><div><b>到「老師專區」挑一個課程包</b>，按一下就產生可列印的學習單和答案。</div></li>
+    </ol>
+    <p class="lead" style="margin-bottom:0">學生用平板或電腦也能自己玩，進度只存在自己的裝置，不蒐集任何個人資料。</p>
+  </div>
+</main>
+<noscript><p style="text-align:center">需要開啟 JavaScript 才能使用互動功能。</p></noscript>
+<script src="/js/data.js?v=1"></script>
+<script src="/js/layout.js?v=1"></script>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/p-home.js?v=1"></script>
+</body>
+</html>

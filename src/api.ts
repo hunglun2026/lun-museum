@@ -64,7 +64,9 @@ export async function handleApi(url: URL, env: Env, ctx: ExecutionContext): Prom
   // 不用 ORDER BY RANDOM()（會讀整張表），改成「隨機起點往後取」分 4 段，每次只讀幾十列。
   if (path === "/api/pool") {
     const k = int(p.get("k"), 24, 4, 60);
-    const [w, args] = filters(new URLSearchParams({ cat: p.get("cat") ?? "", grp: p.get("grp") ?? "", photo: "1" }));
+    const [w0, args] = filters(new URLSearchParams({ cat: p.get("cat") ?? "", grp: p.get("grp") ?? "", photo: "1" }));
+    // reign=1：只要有年號的（高中「哪個皇帝年號」題）
+    const w = w0 + (p.get("reign") === "1" ? " AND reign IS NOT NULL" : "");
     const range = await env.DB.prepare(`SELECT min(n) AS lo, max(n) AS hi FROM items WHERE pool=1 AND ${w}`).bind(...args).first<{ lo: number; hi: number }>();
     if (!range?.hi) return json({ items: [] }, "no-store");
     const per = Math.ceil(k / 4);
@@ -84,8 +86,8 @@ export async function handleApi(url: URL, env: Env, ctx: ExecutionContext): Prom
       const [w, args] = filters(p);
       const after = int(p.get("after"), 0, 0, 1e9);
       const limit = int(p.get("limit"), 30, 1, 60);
-      const order = p.get("photo") === "1" ? "" : "photo DESC,";
-      const r = await env.DB.prepare(`SELECT ${CARD} FROM items WHERE ${w} AND n > ? ORDER BY ${order} n LIMIT ?`).bind(...args, after, limit).all();
+      // 只依編號排：翻頁游標（after）也是編號，兩者一致才不會漏或重複
+      const r = await env.DB.prepare(`SELECT ${CARD} FROM items WHERE ${w} AND n > ? ORDER BY n LIMIT ?`).bind(...args, after, limit).all();
       return { items: r.results };
     });
   }

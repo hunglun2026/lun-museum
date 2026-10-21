@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>老師專區｜故宮探險家</title>
+<meta name="description" content="一鍵產生可列印的故宮文物學習單與答案、投影出題、全班搶答計分板與倒數計時器。國小、國中、高中三種難度。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/style.css?v=1">
+</head>
+<body data-page="teacher">
+<main>
+  <h1>🍎 老師專區</h1>
+  <p class="lead">備課、上課、評量都在這裡。題目難度跟著右上角的「難度」走。所有資料只存在這台電腦，不會上傳。</p>
+  <div class="tabs noprint" role="tablist" aria-label="老師工具">
+    <button class="tab" role="tab" aria-selected="true" data-tab="sheet">🖨️ 學習單</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="slides">📽️ 出題投影</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="board">🏆 搶答計分板</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="guide">📚 課程包</button>
+  </div>
+  <section id="tab-sheet" class="panel">
+    <div class="form-row noprint">
+      <label>朝代範圍<select id="grp"></select></label>
+      <label>分類<select id="cat"></select></label>
+      <label>題型<select id="kind"></select></label>
+      <label>題數<select id="num"><option>5</option><option selected>8</option><option>10</option><option>12</option><option>15</option></select></label>
+      <label style="grid-auto-flow:column;align-items:center;gap:8px"><input type="checkbox" id="withAns" checked style="width:24px;height:24px"> 附答案頁</label>
+    </div>
+    <p class="noprint"><button class="btn primary" id="gen" disabled>產生學習單</button> <button class="btn" id="print" disabled>列印</button></p>
+    <div id="sheet" class="sheet" hidden></div>
+  </section>
+  <section id="tab-slides" class="panel" hidden>
+    <p class="noprint">用「學習單」分頁選好的範圍、題型、題數出題，適合投影給全班看。</p>
+    <p class="noprint"><button class="btn primary" id="gen2" disabled>開始出題</button></p>
+    <div id="slide" class="stage" hidden></div>
+  </section>
+  <section id="tab-board" class="panel" hidden></section>
+  <section id="tab-guide" class="panel" hidden>
+    <h2 style="margin-top:0">四個現成課程包（每包 40 分鐘）</h2>
+    <p class="lead">按「一鍵帶入學習單」會自動設好難度、範圍和題型並產生學習單，可直接列印。實際請依貴校課程計畫調整。</p>
+    <div class="packs">
+      <article class="pack">
+        <h3>⏳ 認識朝代（國小）</h3>
+        <p><b>學習目標</b>：知道漢、唐、宋、明、清的先後順序，看文物說出它大約是哪個朝代。</p>
+        <ol>
+          <li><b>暖身 5 分</b>：投影<a href="/era">猜猜哪個朝代</a>，全班舉手搶答，用計分板記分。</li>
+          <li><b>排序 15 分</b>：兩人一組玩<a href="/timeline">朝代排排站</a>。</li>
+          <li><b>觀察 10 分</b>：<a href="/artifact">文物小百科</a>選一個朝代，每人挑一件最喜歡的說給同學聽。</li>
+          <li><b>練習 10 分</b>：學習單「哪個朝代」。</li>
+        </ol>
+        <button class="btn primary" data-pack="e,,,era,8">一鍵帶入學習單</button>
+      </article>
+      <article class="pack">
+        <h3>🏺 文物分類</h3>
+        <p><b>學習目標</b>：分辨陶瓷、玉器、銅器、琺瑯、漆器等材質，說出判斷的理由。</p>
+        <ol>
+          <li><b>觀察 10 分</b>：<a href="/artifact">文物小百科</a>用「分類」篩選，比較陶瓷和玉器的光澤、顏色。</li>
+          <li><b>討論 10 分</b>：分組說說「怎麼看出它是銅器」。</li>
+          <li><b>搶答 10 分</b>：「出題投影」選「屬於哪一類」，每題按「10 秒」倒數。</li>
+          <li><b>練習 10 分</b>：學習單「屬於哪一類」。</li>
+        </ol>
+        <button class="btn primary" data-pack=",,,cat,10">一鍵帶入學習單</button>
+      </article>
+      <article class="pack">
+        <h3>🔍 看圖認寶物</h3>
+        <p><b>學習目標</b>：仔細觀察器物的造型與紋飾，連結名稱與用途。</p>
+        <ol>
+          <li><b>暖身 5 分</b>：<a href="/search">典藏搜尋</a>找「翠玉」「鼻煙壺」，猜猜它們是做什麼用的。</li>
+          <li><b>觀察 15 分</b>：小百科挑三件，記下形狀、顏色、紋飾。</li>
+          <li><b>練習 20 分</b>：學習單「看圖選名稱」，背面畫下最喜歡的一件。</li>
+        </ol>
+        <button class="btn primary" data-pack=",,,picture,8">一鍵帶入學習單</button>
+      </article>
+      <article class="pack">
+        <h3>👑 明清年號（高中）</h3>
+        <p><b>學習目標</b>：熟悉明清年號先後，從器物款識判讀年代，連結清代史料。</p>
+        <ol>
+          <li><b>引導 10 分</b>：<a href="/search?t=archives&amp;q=%E8%87%BA%E7%81%A3">典藏搜尋</a>的清代檔案，看「臺灣」相關奏摺依年代排列。</li>
+          <li><b>挑戰 15 分</b>：高中難度玩<a href="/era">猜猜哪個朝代</a>，明清文物要答年號。</li>
+          <li><b>練習 15 分</b>：學習單「哪個年號」。</li>
+        </ol>
+        <button class="btn primary" data-pack="s,,,reign,10">一鍵帶入學習單</button>
+      </article>
+    </div>
+    <h2>使用小提醒</h2>
+    <ul>
+      <li>朝代是依故宮資料自動整理；故宮只寫「明至清」「唐以後」這類跨朝代的文物不會出朝代題，避免答案有爭議。</li>
+      <li>出朝代題時，名稱裡直接寫出朝代或年號的字會換成「○○」。</li>
+      <li>遊戲結束會列出答錯的文物，可按「只練錯的」再練一次。</li>
+      <li>文物文字依故宮授權標示「國立故宮博物院，臺北，CC BY 4.0」，學習單下方已附上，請勿刪除。</li>
+    </ul>
+  </section>
+</main>
+<script src="/js/data.js?v=1"></script>
+<script src="/js/layout.js?v=1"></script>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/qgen.js?v=1"></script>
+<script src="/js/p-board.js?v=1"></script>
+<script src="/js/p-teacher.js?v=1"></script>
+</body>
+</html>

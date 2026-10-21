@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>典藏搜尋｜故宮探險家</title>
+<meta name="description" content="搜尋國立故宮博物院約 10.9 萬件文物與 39.6 萬件清代檔案，例如青花、玉璧、乾隆、臺灣。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/style.css?v=1">
+</head>
+<body data-page="search">
+<main>
+  <h1>🔎 典藏搜尋</h1>
+  <p class="lead">文物 <b data-stat="items">109,164</b> 件、清代檔案 <b data-stat="archives">395,801</b> 件，打關鍵字就能找。</p>
+  <div class="tabs" role="tablist" aria-label="搜尋範圍">
+    <button class="tab" role="tab" aria-selected="true" data-t="items">🏺 文物</button>
+    <button class="tab" role="tab" aria-selected="false" data-t="archives">📜 清代檔案</button>
+  </div>
+  <form class="form-row" id="f" role="search">
+    <label style="flex:1">關鍵字<input type="search" id="q" placeholder="例如：青花、玉璧、乾隆、臺灣" autocomplete="off"></label>
+    <button class="btn primary">搜尋</button>
+  </form>
+  <p class="chips" id="hot"></p>
+  <p class="count" id="count" role="status" aria-live="polite"></p>
+  <div id="out"></div>
+  <p class="more"><button class="btn" id="more" hidden>載入更多</button></p>
+</main>
+<script src="/js/data.js?v=1"></script>
+<script src="/js/layout.js?v=1"></script>
+<script src="/js/fx.js?v=1"></script>
+<script src="/js/p-search.js?v=1"></script>
+</body>
+</html>

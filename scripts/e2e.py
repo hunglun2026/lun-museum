@@ -1,0 +1,150 @@
+"""端對端測試：用無頭瀏覽器走學生與老師會按的路徑，收 JS 錯誤、失敗請求、橫向溢出。
+
+用法：python scripts/e2e.py [網址，預設 http://127.0.0.1:8813] [--shots 截圖資料夾]
+離場碼：有任何一項失敗就是 1。瀏覽器是自己開的獨立無頭 Chrome，跑完就關。
+"""
+import argparse
+import sys
+import time
+from pathlib import Path
+
+from playwright.sync_api import sync_playwright
+
+PAGES = ["/", "/artifact", "/search", "/era", "/timeline", "/teacher", "/passport"]
+fails = []
+
+
+def check(cond, msg):
+    print(("  [OK] " if cond else "  [失敗] ") + msg, flush=True)
+    if not cond:
+        fails.append(msg)
+
+
+def watch(page):
+    errs = []
+    page.on("pageerror", lambda e: errs.append("JS 錯誤：" + str(e)[:200]))
+    page.on("console", lambda m: m.type == "error" and errs.append("console：" + m.text[:200]))
+    page.on("requestfailed", lambda r: errs.append("請求失敗：" + r.url[:120]))
+    page.on("response", lambda r: r.status >= 400 and "/img/" not in r.url and errs.append(f"HTTP {r.status}：{r.url[:120]}"))
+    return errs
+
+
+def ready(page, timeout=30000):
+    page.wait_for_function("document.documentElement.dataset.ready", timeout=timeout)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("base", nargs="?", default="http://127.0.0.1:8813")
+    ap.add_argument("--shots")
+    a = ap.parse_args()
+    base = a.base.rstrip("/")
+    shots = Path(a.shots) if a.shots else None
+    if shots:
+        shots.mkdir(parents=True, exist_ok=True)
+    cb = str(int(time.time()))
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel="chrome", headless=True)
+        for name, vp in (("桌機", {"width": 1280, "height": 900}), ("手機", {"width": 390, "height": 844})):
+            print(f"== {name} 各頁載入", flush=True)
+            ctx = b.new_context(viewport=vp)
+            for path in PAGES:
+                pg = ctx.new_page()
+                errs = watch(pg)
+                pg.goto(base + path + ("&" if "?" in path else "?") + "cb=" + cb)
+                try:
+                    ready(pg)
+                    pg.wait_for_timeout(1500)
+                except Exception as e:  # noqa: BLE001
+                    errs.append("頁面沒有就緒：" + str(e)[:100])
+                over = pg.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
+                check(not errs and over <= 0, f"{name} {path}" + (f"：{errs[:3]}" if errs else "") + (f"：橫向溢出 {over}px" if over > 0 else ""))
+                if shots:
+                    pg.screenshot(path=str(shots / f"{name}{path.replace('/', '_') or '_home'}.png"), full_page=False)
+                pg.close()
+            ctx.close()
+
+        print("== 操作流程", flush=True)
+        ctx = b.new_context(viewport={"width": 1280, "height": 900})
+        pg = ctx.new_page()
+        errs = watch(pg)
+
+        # 首頁今日展櫃有照片
+        pg.goto(base + "/?cb=" + cb); ready(pg); pg.wait_for_timeout(2500)
+        n = pg.evaluate("[...document.querySelectorAll('#today img.photo')].filter(i=>i.naturalWidth>0).length")
+        check(n >= 4, f"首頁今日展櫃顯示 {n} 張照片")
+
+        # 小百科：篩選玉器、開詳情
+        pg.goto(base + "/artifact?cb=" + cb); ready(pg)
+        pg.get_by_role("button", name="💚 玉器").click(); pg.wait_for_timeout(2000)
+        cats = pg.evaluate("[...document.querySelectorAll('#grid .tag2:not(.era)')].map(e=>e.textContent)")
+        check(cats and all(c == "玉器" for c in cats), f"小百科篩選玉器：{len(cats)} 件都是玉器")
+        pg.locator("#grid .acard").first.click(); pg.wait_for_timeout(2000)
+        title = pg.locator("#dlg h2").inner_text()
+        big = pg.evaluate("(()=>{const i=document.querySelector('#dlg img.photo');return i?i.naturalWidth:0})()")
+        check(bool(title) and big > 0, f"詳情對話框：{title}，大圖寬 {big}px")
+        check(pg.locator("#dlg .plain").count() == 1, "國小難度有白話介紹")
+        pg.locator("#dlg #x").click()
+
+        # 搜尋文物與清代檔案
+        pg.goto(base + "/search?q=%E9%9D%92%E8%8A%B1&cb=" + cb); ready(pg); pg.wait_for_timeout(2500)
+        txt = pg.locator("#count").inner_text()
+        check("11,407" in txt, f"搜尋青花：{txt[:40]}")
+        pg.get_by_role("tab", name="📜 清代檔案").click()
+        pg.fill("#q", "臺灣"); pg.get_by_role("button", name="搜尋").click(); pg.wait_for_timeout(2500)
+        txt = pg.locator("#count").inner_text()
+        years = pg.evaluate("[...document.querySelectorAll('.arow .y')].map(e=>+e.textContent).filter(Boolean)")
+        check("1,609" in txt and years == sorted(years), f"清代檔案臺灣：{txt[:30]}，年代由早到晚 {years[:3]}")
+        href = pg.locator(".arow").first.get_attribute("href")
+        check(href.startswith("https://qingarchives.npm.edu.tw/"), "檔案連到故宮原件頁")
+
+        # 猜朝代：三種難度各答第一題
+        for lv, name in (("e", "國小"), ("j", "國中"), ("s", "高中")):
+            pg.goto(base + "/era?cb=" + cb); ready(pg)
+            pg.select_option("#lvl", lv); pg.wait_for_timeout(300)
+            pg.get_by_role("button", name="開始（10 題）").click()
+            pg.wait_for_selector(".opt", timeout=20000)
+            nopt = pg.locator(".opt").count()
+            prompt = pg.locator(".stage h2").inner_text()
+            pg.locator(".opt").first.click(); pg.wait_for_timeout(500)
+            fb = pg.locator("#fb").inner_text()
+            check(nopt == (3 if lv == "e" else 4) and fb, f"猜朝代 {name}：{nopt} 個選項，題目「{prompt[:30]}」，回饋「{fb[:24]}」")
+
+        # 朝代排排站：國小 4 件點完
+        pg.goto(base + "/timeline?cb=" + cb); ready(pg)
+        pg.select_option("#lvl", "e"); pg.wait_for_timeout(300)
+        pg.get_by_role("button", name="開始排排站").click()
+        pg.wait_for_selector(".tl-card", timeout=20000)
+        k = pg.locator(".tl-card").count()
+        for i in range(k):
+            pg.locator(".tl-card:not([disabled])").first.click()
+        pg.wait_for_timeout(500)
+        marked = pg.locator(".tl-card.right, .tl-card.wrong").count()
+        check(k == 4 and marked == 4 and pg.locator(".tl-line span").count() == 4, f"排排站國小：{k} 件、標記 {marked} 件、正確順序列出")
+
+        # 老師專區：學習單
+        pg.goto(base + "/teacher?cb=" + cb); ready(pg)
+        pg.click("#gen"); pg.wait_for_selector("#sheet .q", timeout=30000); pg.wait_for_timeout(2000)
+        qn = pg.locator("#sheet .q").count()
+        imgs = pg.evaluate("[...document.querySelectorAll('#sheet img')].filter(i=>i.naturalWidth>0).length")
+        check(qn == 16, f"學習單 8 題＋答案頁：共 {qn} 題區塊、{imgs} 張圖")
+        check("CC BY 4.0" in pg.locator("#sheet").inner_text(), "學習單附故宮授權標示")
+        pg.get_by_role("tab", name="📚 課程包").click()
+        pg.get_by_role("button", name="一鍵帶入學習單").nth(3).click()
+        pg.wait_for_timeout(4000)
+        lvl = pg.eval_on_selector("#lvl", "e=>e.value")
+        rq = pg.evaluate("[...document.querySelectorAll('#sheet .q')].filter(q=>q.textContent.includes('年號')).length")
+        check(lvl == "s" and rq > 0, f"明清年號課程包：難度切到高中、{rq} 題年號題")
+
+        # 護照
+        pg.goto(base + "/passport?cb=" + cb); ready(pg)
+        seen = pg.locator("#seen .acard").count()
+        check(seen >= 1, f"護照記到看過的文物 {seen} 件")
+        check(not errs, "操作流程沒有 JS 錯誤" + (f"：{errs[:3]}" if errs else ""))
+        b.close()
+    print(f"\n結果：{'全部通過' if not fails else f'失敗 {len(fails)} 項'}")
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
