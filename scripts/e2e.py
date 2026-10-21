@@ -10,7 +10,7 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-PAGES = ["/", "/artifact", "/search", "/era", "/timeline", "/teacher", "/passport"]
+PAGES = ["/", "/artifact", "/search", "/era", "/timeline", "/classify", "/memory", "/exhibit", "/archives", "/teacher", "/passport"]
 fails = []
 
 
@@ -135,6 +135,73 @@ def main():
         lvl = pg.eval_on_selector("#lvl", "e=>e.value")
         rq = pg.evaluate("[...document.querySelectorAll('#sheet .q')].filter(q=>q.textContent.includes('年號')).length")
         check(lvl == "s" and rq > 0, f"明清年號課程包：難度切到高中、{rq} 題年號題")
+
+        # ---- 第二階段 ----
+        # 分類闖關：三種難度選項數
+        for lv, k in (("e", 3), ("j", 4), ("s", 4)):
+            pg.goto(base + "/classify?cb=" + cb); ready(pg)
+            pg.select_option("#lvl", lv); pg.wait_for_timeout(300)
+            pg.get_by_role("button", name="開始（10 題）").click()
+            pg.wait_for_selector(".opt", timeout=20000)
+            n = pg.locator(".opt").count()
+            labels = pg.evaluate("[...document.querySelectorAll('.opt')].map(o=>o.firstChild.textContent)")
+            pg.locator(".opt").first.click(); pg.wait_for_timeout(400)
+            check(n == k and not any("雜項" in x for x in labels) and pg.locator("#fb").inner_text(), f"分類闖關 {lv}：{n} 個選項 {labels}")
+
+        # 翻牌配對：國小 6 對，作弊把每對翻開，確認能配完
+        pg.goto(base + "/memory?cb=" + cb); ready(pg)
+        pg.select_option("#lvl", "e"); pg.wait_for_timeout(300)
+        pg.get_by_role("button", name="開始翻牌").click()
+        pg.wait_for_selector(".mcard", timeout=20000)
+        cards = pg.locator(".mcard").count()
+        names = pg.evaluate("[...document.querySelectorAll('.mcard')].map(c=>c.querySelector('.front b')?c.querySelector('.front b').textContent:c.querySelector('.front img,.front .ph').getAttribute('alt')||c.querySelector('.front .ph').getAttribute('aria-label'))")
+        for name in dict.fromkeys(names):
+            idx = [i for i, x in enumerate(names) if x == name]
+            for i in idx[:2]:
+                pg.locator(".mcard").nth(i).click(); pg.wait_for_timeout(150)
+            pg.wait_for_timeout(250)
+        pg.wait_for_timeout(1200)
+        check(cards == 12 and "全部配對完成" in pg.locator("main").inner_text(), f"翻牌配對國小：{cards} 張牌，配完出現完成畫面")
+
+        # 小展覽：從小百科加入 → 展覽頁寫解說牌 → 投影
+        pg.goto(base + "/artifact?cb=" + cb); ready(pg); pg.wait_for_timeout(1500)
+        for i in range(2):
+            pg.locator("#grid .acard").nth(i).click(); pg.wait_for_selector("#dlg #ex", timeout=15000); pg.wait_for_timeout(500)
+            pg.locator("#dlg #ex").click(); pg.wait_for_timeout(300)
+            pg.locator("#dlg #x").click(); pg.wait_for_timeout(300)
+        pg.goto(base + "/exhibit?cb=" + cb); ready(pg)
+        rows = pg.locator(".ex-item").count()
+        pg.locator(".ex-item textarea").first.fill("這是我最喜歡的文物，因為它的顏色很漂亮。")
+        pg.reload(); ready(pg)
+        kept = pg.locator(".ex-item textarea").first.input_value()
+        pg.get_by_role("button", name="📽️ 投影發表").click(); pg.wait_for_timeout(800)
+        slide = pg.locator(".show h2").inner_text()
+        pg.keyboard.press("ArrowRight"); pg.wait_for_timeout(300)
+        pg_no = pg.locator("#pg").inner_text()
+        pg.locator(".show #cl").click()
+        check(rows >= 2 and "最喜歡" in kept and slide and pg_no.startswith("2"), f"小展覽：{rows} 件、解說牌重新整理後還在、投影第 {pg_no}")
+
+        # 史料探究：主題 → 長條圖 → 點一個十年列出檔案
+        pg.goto(base + "/archives?cb=" + cb); ready(pg)
+        pg.locator("#topics .chip", has_text="鐵路").click()
+        pg.wait_for_selector(".hbar", timeout=20000)
+        bars = pg.locator(".hbar").count()
+        people = pg.locator(".alist").first.inner_text()
+        pg.locator(".hbar").last.click(); pg.wait_for_selector("#docs .arow", timeout=20000)
+        yrs = pg.evaluate("[...document.querySelectorAll('#docs .arow .y')].map(e=>+e.textContent)")
+        check(bars >= 3 and "袁世凱" in people and yrs and all(1910 <= y <= 1919 for y in yrs), f"史料探究鐵路：{bars} 個年代、官員含袁世凱、1910 年代 {len(yrs)} 份")
+
+        # 白話版：有 AI 改寫的文物，國小顯示改寫與標示，高中不顯示
+        # 同名的護法獅有好幾件，只有一件有白話版：逐件查，挑有 ai_text 的
+        n = pg.evaluate("""async () => {
+          const d = await (await fetch('/api/search?q=%E8%AD%B7%E6%B3%95%E7%8D%85')).json();
+          for (const it of d.items) { const r = await (await fetch('/api/item/' + it.n)).json(); if (r.item.ai_text) return it.n; }
+          return 0; }""")
+        for lv, want in (("e", True), ("s", False)):
+            pg.goto(base + "/artifact?cb=" + cb + "#" + str(n)); ready(pg)
+            pg.select_option("#lvl", lv); pg.wait_for_timeout(1500)
+            has = "AI 改寫" in pg.locator("#dlg").inner_text()
+            check(has == want, f"白話版 {lv}：{'有' if has else '沒有'}顯示 AI 改寫")
 
         # 護照
         pg.goto(base + "/passport?cb=" + cb); ready(pg)

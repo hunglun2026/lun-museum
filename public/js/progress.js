@@ -24,8 +24,16 @@ window.Progress = (function () {
   // 各遊戲在護照上顯示的名字（key 要跟各遊戲存星數用的一樣；難度另外記，例如 era-e）
   const GAMES = [
     ["era", "猜猜哪個朝代"], ["era-timed", "猜朝代・60 秒"], ["timeline", "朝代排排站"],
+    ["classify", "分類闖關"], ["classify-timed", "分類闖關・60 秒"], ["memory", "翻牌配對"],
   ];
   const LV = { e: "國小", j: "國中", s: "高中" };
+
+  // 小展覽的資料在 exhibit.js（護照頁有載入）；沒載入的頁面不算這個徽章
+  function exhibitDone() {
+    if (!window.Exhibit) return false;
+    const e = Exhibit.get();
+    return e.items.length >= 5 && e.items.every((x) => (x.note || "").trim().length >= 10);
+  }
 
   // 徽章：有沒有拿到從紀錄算出來，不另外存，規則改了舊紀錄也會跟著對
   function badges() {
@@ -42,7 +50,10 @@ window.Progress = (function () {
       ["⏳", "穿越時空", "看過 8 個不同朝代的文物", grps.size >= 8],
       ["🏺", "猜朝代高手", "猜猜哪個朝代拿到三顆星", st("era") >= 3],
       ["📏", "時間軸達人", "朝代排排站拿到三顆星", st("timeline") >= 3],
-      ["⚡", "閃電快手", "猜朝代 60 秒挑戰拿到三顆星", st("era-timed") >= 3],
+      ["⚡", "閃電快手", "任一個 60 秒挑戰拿到三顆星", st("era-timed") >= 3 || st("classify-timed") >= 3],
+      ["🧩", "材質偵探", "分類闖關拿到三顆星", st("classify") >= 3],
+      ["🃏", "過目不忘", "翻牌配對拿到三顆星", st("memory") >= 3],
+      ["🖼️", "小小策展人", "我的小展覽放了 5 件以上，而且每件都寫了解說牌", exhibitDone()],
       ["🎓", "高中挑戰者", "用高中難度在任一遊戲拿到三顆星", GAMES.some(([k]) => stLv(k, "s") >= 3)],
     ];
     return badge.map(([icon, name, how, got]) => ({ icon, name, how, got }));

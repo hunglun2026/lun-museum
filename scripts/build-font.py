@@ -47,6 +47,9 @@ def data_rows() -> list:
         r = json.loads(line)
         if r["pool"]:
             rows.append({"name": r["name"], "desc": r["desc"], "era": r["era"]})
+    # 精選名品的白話改寫也會顯示在詳情頁
+    ai = json.loads((ROOT / "data" / "ai_plain.json").read_text(encoding="utf-8"))
+    rows += [{"name": "", "desc": t, "era": ""} for t in ai.values()]
     return rows
 
 

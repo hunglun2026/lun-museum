@@ -4,7 +4,7 @@ Mu.boot(function () {
   const $ = (id) => document.getElementById(id);
   const u = new URLSearchParams(location.search);
   const st = { t: u.get("t") === "archives" ? "archives" : "items", q: u.get("q") || "", page: 0, seq: 0 };
-  const HOT = { items: ["青花", "玉璧", "翠玉", "鼎", "乾隆", "鼻煙壺", "汝窯", "龍"], archives: ["臺灣", "颱風", "地震", "鄭成功", "林爽文", "牡丹社", "雨水收成", "海防"] };
+  const HOT = { items: ["青花", "玉璧", "翠玉", "鼎", "乾隆", "鼻煙壺", "汝窯", "龍"], archives: ["臺灣", "海防", "鴉片", "鐵路", "林爽文", "地震", "米價", "教案"] };
 
   const tabs = document.querySelectorAll(".tab");
   function setTab(t) {

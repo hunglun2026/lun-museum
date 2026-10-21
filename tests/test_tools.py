@@ -24,6 +24,7 @@ class Era(unittest.TestCase):
         self.check("春秋中晚期", "周", True)
         self.check("良渚文化", "新石器時代", True)
         self.check("周則天武后萬歲通天二年（697）", "唐", True)
+        self.check("晉陝龍山系", "新石器時代", True)  # 不是晉朝
 
     def test_not_quiz(self):
         self.check("明晚期至清", "明", False, why="跨朝代")
@@ -31,6 +32,8 @@ class Era(unittest.TestCase):
         self.check("西元19世紀", None, False, why="只寫世紀")
         self.check("時代待訂", None, False, why="無年代")
         self.check("日本江戶時代", None, False, why="外國")
+        self.check("明治四年（1871）", None, False, why="外國")  # 不是明朝
+        self.check("明治至大正時期", None, False, why="外國")
         self.check("（傳）明", None, False)
         self.check("", None, False)
 

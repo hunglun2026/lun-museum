@@ -60,16 +60,30 @@ Mu.boot(function (meta) {
     const box = el(
       '<div><div class="dlg-bar"><button class="btn" id="x">關閉 ✕</button></div><div class="detail"><div id="big"></div><div>' +
       '<h2 style="margin-top:0">' + esc(it.name) + "</h2>" +
-      (lv === "e" ? '<p class="plain">' + esc(Mu.plain(it)) + "</p>" : "") +
+      // 白話介紹：有精選名品的 AI 改寫就用它（國小、國中），國小沒有改寫時用範本句；高中直接讀故宮原文
+      (it.ai_text && lv !== "s"
+        ? '<div class="plain">' + esc(it.ai_text) + '<br><small class="credit">AI 改寫，內容依照下方故宮的說明</small></div>'
+        : lv === "e" ? '<p class="plain">' + esc(Mu.plain(it)) + "</p>" : "") +
       '<div class="facts">' + facts.map((f) => '<div class="fact"><h4>' + esc(f[0]) + "</h4><p>" + esc(f[1]) + "</p></div>").join("") + "</div>" +
       (it.descr ? "<h3>故宮的說明</h3><p class=\"orig\">" + esc(it.descr) + "</p>" : "") +
-      (it.url ? '<p><a class="btn" href="' + esc(it.url) + '" target="_blank" rel="noopener">到故宮網站看這件 ↗</a></p>' : "") +
+      '<p><button class="btn primary" id="ex"></button> ' +
+      (it.url ? '<a class="btn" href="' + esc(it.url) + '" target="_blank" rel="noopener">到故宮網站看這件 ↗</a>' : "") + "</p>" +
       '<p class="credit">文字：國立故宮博物院，臺北，CC BY 4.0 @ www.npm.gov.tw。圖片：故宮開放低階圖像（CC0）。</p>' +
       "</div></div></div>"
     );
     box.querySelector("#big").appendChild(Mu.photo(it, true));
     $("dlgIn").replaceChildren(box);
     box.querySelector("#x").onclick = () => $("dlg").close();
+    // 加入我的小展覽（最多 12 件）
+    const ex = box.querySelector("#ex");
+    const exLabel = () => (ex.textContent = Exhibit.has(it.n) ? "✓ 已在我的展覽" : "🖼️ 加入我的展覽");
+    exLabel();
+    ex.onclick = async () => {
+      const r = Exhibit.add(it);
+      if (r === "full") await Mu.dialog("展覽最多放 " + Exhibit.MAX + " 件，先到「我的小展覽」拿掉幾件再加。");
+      else if (r === "added") Fx.right();
+      exLabel();
+    };
     if (!$("dlg").open) $("dlg").showModal();
   }
   $("dlg").addEventListener("close", () => { if (location.hash) history.replaceState(null, "", location.pathname); });

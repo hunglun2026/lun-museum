@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>史料探究｜故宮探險家</title>
+<meta name="description" content="用故宮 39.6 萬件清代檔案做歷史探究：選主題看每十年有幾份奏摺、誰寫最多，點進去讀原件目錄。適合高中歷史。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/style.css?v=2">
+</head>
+<body data-page="archives">
+<main>
+  <h1>📜 史料探究</h1>
+  <p class="lead">清代官員寫給皇帝的奏摺，是最直接的第一手史料。選一個主題，看看它在哪些年代被提到最多、是誰在寫。</p>
+  <div class="chips" id="topics" aria-label="主題"></div>
+  <form class="form-row" id="f" role="search">
+    <label style="flex:1">自己找主題<input type="search" id="q" placeholder="例如：臺灣、海防、鐵路" autocomplete="off"></label>
+    <button class="btn primary">探究</button>
+  </form>
+  <div id="out"></div>
+</main>
+<script src="/js/data.js?v=2"></script>
+<script src="/js/layout.js?v=2"></script>
+<script src="/js/fx.js?v=2"></script>
+<script src="/js/p-archives.js?v=2"></script>
+</body>
+</html>

@@ -16,7 +16,7 @@ git "${GIT_AUTH[@]}" clone -q https://github.com/hunglun2026/lun-museum.git "$ST
 cd "$STG/repo"
 git ls-files | xargs -r rm -f
 cd "$SRC"
-cp -r src public migrations tests .github package.json package-lock.json wrangler.jsonc tsconfig.json README.md .gitignore "$STG/repo/"
+cp -r src public migrations tests data .github package.json package-lock.json wrangler.jsonc tsconfig.json README.md .gitignore "$STG/repo/"
 mkdir -p "$STG/repo/scripts" "$STG/repo/tools"
 cp scripts/*.py scripts/*.sh "$STG/repo/scripts/" 2>/dev/null || true
 cp -r scripts/e2e "$STG/repo/scripts/" 2>/dev/null || true

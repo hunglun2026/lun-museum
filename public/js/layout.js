@@ -2,11 +2,15 @@
 (function () {
   "use strict";
   const NAV = [
-    ["artifact", "文物小百科", "/artifact"],
-    ["search", "典藏搜尋", "/search"],
-    ["timeline", "朝代排排站", "/timeline"],
-    ["era", "猜猜哪個朝代", "/era"],
-    ["passport", "探險護照", "/passport"],
+    ["artifact", "小百科", "/artifact"],
+    ["search", "搜尋", "/search"],
+    ["era", "猜朝代", "/era"],
+    ["timeline", "排排站", "/timeline"],
+    ["classify", "分類闖關", "/classify"],
+    ["memory", "翻牌", "/memory"],
+    ["exhibit", "小展覽", "/exhibit"],
+    ["archives", "史料探究", "/archives"],
+    ["passport", "護照", "/passport"],
     ["teacher", "老師專區", "/teacher"],
   ];
   const page = document.body.dataset.page || "";

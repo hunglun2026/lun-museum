@@ -95,7 +95,8 @@ export async function handleApi(url: URL, env: Env, ctx: ExecutionContext): Prom
   const one = path.match(/^\/api\/item\/(\d+)$/);
   if (one) {
     return edge(url, env, ctx, "public, max-age=3600, s-maxage=86400", async () => {
-      const it = await env.DB.prepare("SELECT * FROM items WHERE n = ?").bind(+one[1]).first();
+      // ai_text：精選名品的白話改寫（ai_plain 表，用文物編號對應）
+      const it = await env.DB.prepare("SELECT i.*, a.text AS ai_text FROM items i LEFT JOIN ai_plain a ON a.id = i.id WHERE i.n = ?").bind(+one[1]).first();
       return { item: it ?? null };
     });
   }
@@ -122,6 +123,21 @@ export async function handleApi(url: URL, env: Env, ctx: ExecutionContext): Prom
          ORDER BY i.photo DESC, i.pool DESC, i.n LIMIT ? OFFSET ?`,
       ).bind(q, ...args, limit, page * limit).all();
       return { total: total?.n ?? 0, items: r.results };
+    });
+  }
+
+  // 史料探究統計：每十年幾份、寫最多份的官員（q 可省略＝全部檔案）
+  if (path === "/api/archives/hist") {
+    return edge(url, env, ctx, "public, max-age=3600, s-maxage=86400", async () => {
+      const q = ftsQuery(p.get("q") ?? "");
+      const from = q ? "archives_fts f JOIN archives a ON a.n = f.rowid WHERE archives_fts MATCH ? AND" : "archives a WHERE";
+      const args = q ? [q] : [];
+      const dec = await env.DB.prepare(`SELECT (a.year / 10) * 10 AS decade, count(*) AS n FROM ${from} a.year BETWEEN 1600 AND 1919 GROUP BY decade ORDER BY decade`).bind(...args).all();
+      const who = await env.DB.prepare(
+        `SELECT a.person, max(a.office) AS office, count(*) AS n FROM ${from} a.person IS NOT NULL GROUP BY a.person ORDER BY n DESC LIMIT 8`,
+      ).bind(...args).all();
+      const total = await env.DB.prepare(`SELECT count(*) AS n FROM ${from} 1=1`).bind(...args).first<{ n: number }>();
+      return { total: total?.n ?? 0, decades: dec.results, people: who.results };
     });
   }
 
