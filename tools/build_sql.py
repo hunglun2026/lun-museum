@@ -171,6 +171,9 @@ def main():
             for s in indexes:
                 f.write(s + "\n")
             f.write(f"INSERT OR REPLACE INTO meta (k, v) VALUES ('{t}_count', '{len(rows)}'), ('{t}_imported_at', datetime('now'));\n")
+            # 每月檢查（src/check.ts）拿這份當基準：data.gov.tw 的 modifiedDate 比它新才通知
+            src_meta = json.loads((CACHE / "raw" / "meta.json").read_text("utf-8"))
+            f.write(f"INSERT OR REPLACE INTO meta (k, v) VALUES ('source_modified', {q(json.dumps({k: v['modified'] for k, v in src_meta.items()}))});\n")
             cnt = len(rows)
         files.append(path)
         print(f"{t}：{cnt} 筆 → {path}（{path.stat().st_size / 1e6:.0f} MB）")

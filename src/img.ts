@@ -21,11 +21,14 @@ export async function serveImage(url: URL, env: Env, ctx: ExecutionContext): Pro
 export async function uploadImages(req: Request, env: Env): Promise<Response> {
   const form = await req.formData();
   const keys: string[] = [];
+  const puts: Promise<unknown>[] = [];
+  // 同時寫入整批：逐張 await 一張要 0.7 秒（2026-10-21 實測），100 件就要 2 分多鐘
   for (const [name, val] of form.entries()) {
     if (!/^(600|240)\/[0-9]+_[0-9]+\.webp$/.test(name) || typeof val === "string") continue;
-    await env.IMG.put(name, (val as File).stream(), { httpMetadata: { contentType: "image/webp" } });
+    puts.push(env.IMG.put(name, await (val as File).arrayBuffer(), { httpMetadata: { contentType: "image/webp" } }));
     if (name.startsWith("600/")) keys.push(name.slice(4, -5));
   }
+  await Promise.all(puts);
   // 一次 UPDATE 的參數上限 100 個，分段標記
   let marked = 0;
   for (let i = 0; i < keys.length; i += 90) {
