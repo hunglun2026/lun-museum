@@ -7,7 +7,7 @@ const json = (data: unknown, cache: string) =>
   });
 
 // 邊緣快取：同機房的相同請求直接回存好的結果，不查 D1。
-// 鍵帶 APP_VERSION（部署新版自動換新）與完整查詢字串；照片上傳後前端 meta 的 photos 會變，前端把它帶在 m 參數。
+// 鍵帶 APP_VERSION（部署新版自動換新）與完整查詢字串；照片上傳後前端 meta 的 photosAll 會變，前端把它帶在 m 參數。
 async function edge(url: URL, env: Env, ctx: ExecutionContext, cache: string, build: () => Promise<unknown>) {
   const key = new Request(`${url.origin}${url.pathname}?app=${encodeURIComponent(env.APP_VERSION)}&${url.searchParams}`);
   const hit = await caches.default.match(key);
@@ -51,9 +51,11 @@ export async function handleApi(url: URL, env: Env, ctx: ExecutionContext): Prom
       const g = await env.DB.prepare("SELECT grp, count(*) AS n FROM items WHERE pool=1 AND photo=1 GROUP BY grp").all();
       const c = await env.DB.prepare("SELECT cat, count(*) AS n FROM items WHERE pool=1 AND photo=1 GROUP BY cat").all();
       const photos = g.results.reduce((s: number, r: any) => s + r.n, 0);
+      // 全部有照片的件數（含出題池外）：前端拿它當快取鍵，池外照片補上後列表才會換新
+      const all = await env.DB.prepare("SELECT count(*) AS n FROM items WHERE photo=1").first<{ n: number }>();
       return {
         version: env.APP_VERSION, items: +(meta.items_count ?? 0), archives: +(meta.archives_count ?? 0),
-        importedAt: meta.items_imported_at ?? null, photos,
+        importedAt: meta.items_imported_at ?? null, photos, photosAll: all?.n ?? photos,
         pool: Object.fromEntries(g.results.map((r: any) => [r.grp, r.n])),
         cats: Object.fromEntries(c.results.map((r: any) => [r.cat, r.n])),
       };

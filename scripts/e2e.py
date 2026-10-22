@@ -10,7 +10,7 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-PAGES = ["/", "/artifact", "/search", "/era", "/timeline", "/classify", "/memory", "/exhibit", "/archives", "/teacher", "/passport"]
+PAGES = ["/", "/artifact", "/search", "/era", "/timeline", "/classify", "/memory", "/exhibit", "/archives", "/teacher", "/passport", "/help"]
 fails = []
 
 
@@ -70,7 +70,8 @@ def main():
         errs = watch(pg)
 
         # 首頁今日展櫃有照片
-        pg.goto(base + "/?cb=" + cb); ready(pg); pg.wait_for_timeout(2500)
+        pg.goto(base + "/?cb=" + cb); ready(pg)
+        pg.evaluate("document.getElementById('today').scrollIntoView()"); pg.wait_for_timeout(2500)  # 展櫃在開場與展櫃動畫下面，照片捲到才載入
         n = pg.evaluate("[...document.querySelectorAll('#today img.photo')].filter(i=>i.naturalWidth>0).length")
         check(n >= 4, f"首頁今日展櫃顯示 {n} 張照片")
 
@@ -202,6 +203,44 @@ def main():
             pg.select_option("#lvl", lv); pg.wait_for_timeout(1500)
             has = "AI 改寫" in pg.locator("#dlg").inner_text()
             check(has == want, f"白話版 {lv}：{'有' if has else '沒有'}顯示 AI 改寫")
+
+        # ---- 0.3.0 歡迎頁、引導入口、使用說明 ----
+        # 歡迎頁：8 個展櫃、統計數字換成真實值、捲到最後一個時它的圖有載入
+        pg.goto(base + "/?cb=" + cb); ready(pg)
+        npanel = pg.locator("#tour .w-panel").count()
+        pg.evaluate("document.querySelector('.w-stats').scrollIntoView({block:'center'})"); pg.wait_for_timeout(2000)
+        nums = pg.evaluate("[...document.querySelectorAll('[data-w]')].map(e=>+e.textContent.replace(/,/g,''))")
+        meta = pg.evaluate("fetch('/api/meta').then(r=>r.json())")
+        want = [meta["items"], meta["archives"], meta["photos"], len(meta["pool"])]
+        pg.evaluate("(()=>{const t=document.getElementById('tour');scrollTo(0,t.getBoundingClientRect().top+scrollY+t.offsetHeight-innerHeight)})()")
+        pg.wait_for_timeout(2500)
+        last = pg.evaluate("(()=>{const i=[...document.querySelectorAll('#tour img')].pop();return i.naturalWidth})()")
+        check(npanel == 8 and nums == want and last > 0, f"歡迎頁：{npanel} 個展櫃、數字 {nums}（應為 {want}）、最後一張圖寬 {last}px")
+
+        # 引導入口：學生 → 國中 → 推薦 3 個、難度變國中；重新整理後直接顯示推薦；重新選擇回第 1 題
+        pg.evaluate("localStorage.removeItem('mu-guide')"); pg.goto(base + "/?cb=" + cb); ready(pg)
+        pg.click("[data-who=student]"); pg.click("[data-lv=j]"); pg.wait_for_timeout(300)
+        recs = pg.locator("#g-recs .tool").count()
+        lvl = pg.eval_on_selector("#lvl", "e=>e.value")
+        who = pg.locator("#g-who").inner_text()
+        pg.reload(); ready(pg)
+        kept = pg.locator('[data-step="done"]').is_visible()
+        pg.click("[data-reset]")
+        back = pg.locator('[data-step="who"]').is_visible()
+        check(recs == 3 and lvl == "j" and who == "學生・國中" and kept and back, f"引導入口：推薦 {recs} 個、難度 {lvl}、{who}、重新整理後記得 {kept}、重新選擇 {back}")
+
+        # 老師推薦的課程包連結直接打開課程包分頁
+        pg.goto(base + "/teacher?cb=" + cb + "#guide"); ready(pg)
+        check(pg.locator("#tab-guide").is_visible() and not pg.locator("#tab-sheet").is_visible(), "老師專區 #guide 直接打開課程包")
+
+        # 使用說明：截圖全部載入、目錄連結都對得到、導覽有連結
+        pg.goto(base + "/help?cb=" + cb); ready(pg)
+        r = pg.evaluate("""(async()=>{const w=ms=>new Promise(r=>setTimeout(r,ms));const imgs=[...document.querySelectorAll('main img')];
+          imgs.forEach(i=>i.loading='eager');for(let k=0;k<60&&!imgs.every(i=>i.complete);k++)await w(200);
+          return {n:imgs.length,bad:imgs.filter(i=>!i.naturalWidth).length,
+            toc:[...document.querySelectorAll('.toc a')].filter(a=>!document.querySelector(a.getAttribute('href'))).length,
+            nav:!!document.querySelector('header nav a[href="/help"]'),faq:document.querySelectorAll('.faq').length}})()""")
+        check(r["n"] == 15 and r["bad"] == 0 and r["toc"] == 0 and r["nav"] and r["faq"] >= 10, f"使用說明：截圖 {r['n']} 張、壞 {r['bad']}、目錄對不到 {r['toc']}、導覽有連結 {r['nav']}、常見問題 {r['faq']} 題")
 
         # 護照
         pg.goto(base + "/passport?cb=" + cb); ready(pg)

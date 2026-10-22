@@ -4,51 +4,119 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>故宮探險家｜故宮文物教學網站</title>
-<meta name="description" content="用國立故宮博物院開放資料做的教學網站：10.9 萬件文物與 39.6 萬件清代檔案，猜朝代、排時間軸、印學習單。國小到高中三種難度，免註冊、免安裝。">
+<meta name="description" content="用國立故宮博物院開放資料做的教學網站：10.9 萬件文物與 39.6 萬件清代檔案，猜朝代、排時間軸、分類闖關、印學習單。國小到高中三種難度，免註冊、免安裝。">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/css/style.css?v=2">
+<link rel="stylesheet" href="/css/style.css?v=3">
+<link rel="preload" as="image" href="/img/600/168354_22260145502.webp">
 </head>
-<body data-page="home">
+<body data-page="home" class="welcome">
 <main>
-  <section class="hero">
-    <p class="lead" style="margin:0">國立故宮博物院開放資料 · 國小到高中</p>
-    <h1>走進故宮，<br><span data-stat="items">109,164</span> 件文物等你來探險</h1>
-    <p class="lead">看文物、猜朝代、排時間軸、查清代檔案。<br>不用註冊、不用安裝，打開就能上課。</p>
-    <p><a class="btn primary big" href="/artifact">開始探險 🏛️</a> <a class="btn big" href="/teacher">我是老師</a></p>
+  <section class="w-hero">
+    <div class="w-floats" aria-hidden="true"><span>🏺</span><span>📜</span><span>🖌️</span><span>🐉</span><span>🪷</span><span>⚱️</span><span>🔔</span><span>🏮</span></div>
+    <p class="w-eyebrow"><span>國立故宮博物院開放資料</span><span class="w-sep">·</span><span>國小到高中</span></p>
+    <h1 class="w-title"><span class="w-line">走進故宮</span><span class="w-line w-grad">10.9 萬件文物</span><span class="w-line">等你來探險</span></h1>
+    <p class="w-sub">看文物、猜朝代、排時間軸、查清代檔案。<br>不用註冊、不用安裝，打開就能上課。</p>
+    <p class="w-cta-row"><a class="btn primary big" href="#start">從這裡開始 🏛️</a> <a class="btn big" href="/teacher">我是老師</a> <a class="btn big" href="/help">📘 使用說明</a></p>
+    <a class="w-hint" href="#tour">↓ 向下滑動，看看可以玩什麼</a>
   </section>
 
-  <h2>今天的展櫃</h2>
+  <!-- 引導入口：回答兩題（身分、年級），推薦從哪裡開始。程式在 p-home.js，選過的會記在這台裝置 -->
+  <section class="w-guide" id="start" aria-labelledby="g-title">
+    <h2 id="g-title"><span class="nobr">不知道從哪裡開始？</span><span class="nobr">回答兩個問題</span></h2>
+    <p class="lead"><span class="nobr">選完會推薦最適合的工具，</span><span class="nobr">難度也會自動設好。</span></p>
+    <div class="g-step" data-step="who">
+      <p class="g-q"><small>第 1 題，共 2 題</small>你是…</p>
+      <div class="g-opts">
+        <button class="g-opt" type="button" data-who="student"><span class="e" aria-hidden="true">🎒</span><b>學生</b><small>自己看文物、玩遊戲、蒐集徽章</small></button>
+        <button class="g-opt" type="button" data-who="teacher"><span class="e" aria-hidden="true">🍎</span><b>老師</b><small>上課投影、印學習單、全班搶答</small></button>
+      </div>
+    </div>
+    <div class="g-step" data-step="lv" hidden>
+      <p class="g-q"><small>第 2 題，共 2 題</small><span id="g-lvq">你幾年級？</span></p>
+      <div class="g-opts">
+        <button class="g-opt" type="button" data-lv="e"><span class="e" aria-hidden="true">🌱</span><b>國小</b><small>三選一，附白話介紹，考六個大朝代</small></button>
+        <button class="g-opt" type="button" data-lv="j"><span class="e" aria-hidden="true">📗</span><b>國中</b><small>四選一，朝代更多更細</small></button>
+        <button class="g-opt" type="button" data-lv="s"><span class="e" aria-hidden="true">🎓</span><b>高中</b><small>讀故宮原文，明清文物要答年號</small></button>
+      </div>
+      <div class="g-nav"><button class="btn" type="button" data-back>← 上一步</button></div>
+    </div>
+    <div class="g-step" data-step="done" hidden>
+      <p class="g-q"><small>推薦給你</small><span class="g-who" id="g-who"></span></p>
+      <div class="cards g-recs" id="g-recs"></div>
+      <div class="g-nav"><button class="btn" type="button" data-reset>重新選擇</button> <a class="btn" href="/help">📘 看使用說明</a></div>
+    </div>
+  </section>
+
+  <!-- 捲動放大切換：畫面固定，往下捲時一個個展櫃放大淡出換下一個（動畫在 p-home.js）。
+       圖都是故宮開放的低階圖（最大 600 寬），照原尺寸展示不放大 -->
+  <section class="w-tour" id="tour" aria-label="學習工具介紹">
+    <div class="w-tour-sticky">
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">01 / 08 · 藝術與歷史</span><h2>文物小百科</h2><p>依分類和朝代看照片與說明，國小、國中還有白話介紹，喜歡的可以加進自己的小展覽。</p><a class="btn primary" href="/artifact">打開小百科 →</a></div>
+        <figure class="w-case"><img src="/img/600/168354_22260145502.webp" alt="翠玉白菜" width="600" height="398"><figcaption>翠玉白菜．清</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">02 / 08 · 查找資料</span><h2>典藏搜尋</h2><p>一次搜尋 10.9 萬件文物和 39.6 萬件清代檔案，找「清明上河圖」「鼻煙壺」都可以。</p><a class="btn primary" href="/search">開始搜尋 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/565855_71000944511.webp" alt="清院本清明上河圖（局部）" width="600" height="449"><figcaption>清院本清明上河圖．清乾隆元年</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">03 / 08 · 觀察與推理</span><h2>猜猜哪個朝代</h2><p>看文物照片猜朝代，高中的明清文物還要答出皇帝年號。有 60 秒挑戰，也能投影全班搶答。</p><a class="btn primary" href="/era">來猜朝代 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/427830_430604794.webp" alt="毛公鼎" width="450" height="600"><figcaption>毛公鼎．西周晚期</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">04 / 08 · 時間序列</span><h2>朝代排排站</h2><p>把不同朝代的文物依先後排好，練出腦中的時間軸。</p><a class="btn primary" href="/timeline">排排看 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/163107_85349978656.webp" alt="汝窯青瓷蓮花式溫碗" width="600" height="450"><figcaption>汝窯青瓷蓮花式溫碗．北宋</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">05 / 08 · 觀察與比較</span><h2>分類闖關</h2><p>陶瓷、玉器、銅器、琺瑯、漆器……看照片分出材質，高中的選項更容易混淆。</p><a class="btn primary" href="/classify">開始闖關 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/410534_833680147.webp" alt="鬥彩蓮塘鴛鴦紋盤" width="600" height="450"><figcaption>鬥彩蓮塘鴛鴦紋盤．明成化</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">06 / 08 · 觀察與記憶</span><h2>翻牌配對</h2><p>把文物照片和名稱配成一對。國小 6 對，高中整盤都是同一類，最考眼力。</p><a class="btn primary" href="/memory">翻牌去 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/408765_1047753041.webp" alt="肉形石" width="450" height="600"><figcaption>肉形石．清</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">07 / 08 · 表達與策展</span><h2>我的小展覽</h2><p>挑幾件喜歡的文物，寫上自己的解說牌，可以列印，也能全螢幕投影上台發表。</p><a class="btn primary" href="/exhibit">策一個展 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/549815_1117267892.webp" alt="琺瑯彩龍舟圖膽瓶" width="451" height="600"><figcaption>琺瑯彩龍舟圖膽瓶．清乾隆</figcaption></figure></div>
+      <div class="w-panel"><div class="w-panel-text"><span class="w-tag">08 / 08 · 歷史探究</span><h2>史料探究</h2><p>用清代奏摺看歷史：哪個年代寫得最多、是誰在寫，再點進去讀原件。適合高中。</p><a class="btn primary" href="/archives">開始探究 →</a></div>
+        <figure class="w-case"><img data-src="/img/600/175643_864110810.webp" alt="雕橄欖核舟" width="600" height="450"><figcaption>雕橄欖核舟（底刻〈後赤壁賦〉全文）．清乾隆二年</figcaption></figure></div>
+      <div class="w-dots" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="w-stats" aria-label="收錄數量">
+    <div class="w-stat w-reveal"><b class="w-num" data-w="items">109164</b><span>件文物</span></div>
+    <div class="w-stat w-reveal" style="--delay:1"><b class="w-num" data-w="archives">395801</b><span>件清代檔案</span></div>
+    <div class="w-stat w-reveal" style="--delay:2"><b class="w-num" data-w="photos">42588</b><span>件可以玩遊戲</span></div>
+    <div class="w-stat w-reveal" style="--delay:3"><b class="w-num" data-w="groups">16</b><span>個朝代</span></div>
+  </section>
+
+  <h2 class="w-reveal">今天的展櫃</h2>
   <p class="lead">每次打開都會換一批，點一下看介紹。</p>
   <div class="grid" id="today"></div>
 
-  <h2>學習工具</h2>
+  <h2 class="w-reveal">十個學習工具</h2>
   <div class="cards">
-    <a class="tool" href="/artifact"><div class="ico">📖</div><h3>文物小百科</h3><p>依分類與朝代看照片和說明，國小版附白話介紹。</p><span class="tag">藝術・歷史</span></a>
-    <a class="tool" href="/search"><div class="ico">🔎</div><h3>典藏搜尋</h3><p>搜尋 10.9 萬件文物與 39.6 萬件清代檔案。</p><span class="tag">查找資料</span></a>
-    <a class="tool" href="/era"><div class="ico">🏺</div><h3>猜猜哪個朝代</h3><p>看照片猜朝代，高中要答出皇帝年號。還有 60 秒挑戰。</p><span class="tag">觀察與推理</span></a>
-    <a class="tool" href="/timeline"><div class="ico">📏</div><h3>朝代排排站</h3><p>把不同朝代的文物依先後排好，練出腦中的時間軸。</p><span class="tag">時間序列</span></a>
-    <a class="tool" href="/classify"><div class="ico">🧩</div><h3>分類闖關</h3><p>陶瓷、玉器、銅器、琺瑯、漆器，看照片分出材質。</p><span class="tag">觀察與比較</span></a>
-    <a class="tool" href="/memory"><div class="ico">🃏</div><h3>翻牌配對</h3><p>把文物照片和名稱配成一對，高中整盤同一類更難。</p><span class="tag">觀察與記憶</span></a>
-    <a class="tool" href="/exhibit"><div class="ico">🖼️</div><h3>我的小展覽</h3><p>挑文物、寫解說牌，列印或投影上台發表。</p><span class="tag">表達與策展</span></a>
-    <a class="tool" href="/archives"><div class="ico">📜</div><h3>史料探究</h3><p>用清代奏摺看歷史：哪個年代最多、誰在寫。適合高中。</p><span class="tag">歷史探究</span></a>
-    <a class="tool" href="/passport"><div class="ico">🎫</div><h3>探險護照</h3><p>看過的文物會蓋章，玩遊戲拿星星換徽章。</p><span class="tag">自主學習</span></a>
-    <a class="tool" href="/teacher"><div class="ico">🍎</div><h3>老師專區</h3><p>四個課程包、一鍵產生學習單、出題投影、搶答計分板。</p><span class="tag">備課好幫手</span></a>
+    <a class="tool w-reveal" href="/artifact"><div class="ico">📖</div><h3>文物小百科</h3><p>依分類與朝代看照片和說明，國小、國中附白話介紹。</p><span class="tag">藝術・歷史</span></a>
+    <a class="tool w-reveal" style="--delay:1" href="/search"><div class="ico">🔎</div><h3>典藏搜尋</h3><p>搜尋 10.9 萬件文物與 39.6 萬件清代檔案。</p><span class="tag">查找資料</span></a>
+    <a class="tool w-reveal" style="--delay:2" href="/era"><div class="ico">🏺</div><h3>猜猜哪個朝代</h3><p>看照片猜朝代，高中要答出皇帝年號。還有 60 秒挑戰。</p><span class="tag">觀察與推理</span></a>
+    <a class="tool w-reveal" style="--delay:3" href="/timeline"><div class="ico">📏</div><h3>朝代排排站</h3><p>把不同朝代的文物依先後排好，練出腦中的時間軸。</p><span class="tag">時間序列</span></a>
+    <a class="tool w-reveal" href="/classify"><div class="ico">🧩</div><h3>分類闖關</h3><p>陶瓷、玉器、銅器、琺瑯、漆器，看照片分出材質。</p><span class="tag">觀察與比較</span></a>
+    <a class="tool w-reveal" style="--delay:1" href="/memory"><div class="ico">🃏</div><h3>翻牌配對</h3><p>把文物照片和名稱配成一對，高中整盤同一類更難。</p><span class="tag">觀察與記憶</span></a>
+    <a class="tool w-reveal" style="--delay:2" href="/exhibit"><div class="ico">🖼️</div><h3>我的小展覽</h3><p>挑文物、寫解說牌，列印或投影上台發表。</p><span class="tag">表達與策展</span></a>
+    <a class="tool w-reveal" style="--delay:3" href="/archives"><div class="ico">📜</div><h3>史料探究</h3><p>用清代奏摺看歷史：哪個年代最多、誰在寫。適合高中。</p><span class="tag">歷史探究</span></a>
+    <a class="tool w-reveal" href="/passport"><div class="ico">🎫</div><h3>探險護照</h3><p>看過的文物會蓋章，玩遊戲拿星星換徽章。</p><span class="tag">自主學習</span></a>
+    <a class="tool w-reveal" style="--delay:1" href="/teacher"><div class="ico">🍎</div><h3>老師專區</h3><p>四個課程包、一鍵產生學習單、出題投影、搶答計分板。</p><span class="tag">備課好幫手</span></a>
   </div>
 
-  <h2>老師 3 分鐘上手</h2>
-  <div class="panel">
+  <h2 class="w-reveal">老師 3 分鐘上手</h2>
+  <div class="panel w-reveal">
     <ol class="steps">
       <li><div><b>先在右上角選難度</b>：國小、國中、高中，所有遊戲和學習單都會跟著換。</div></li>
       <li><div><b>投影「猜猜哪個朝代」</b>，全班一起看、舉手搶答，不需要每人一台裝置。</div></li>
       <li><div><b>到「老師專區」挑一個課程包</b>，按一下就產生可列印的學習單和答案。</div></li>
     </ol>
+    <p class="lead">第一次使用？<a href="/help">看完整使用說明</a>，有每個工具的畫面與步驟。</p>
     <p class="lead" style="margin-bottom:0">學生用平板或電腦也能自己玩，進度只存在自己的裝置，不蒐集任何個人資料。</p>
   </div>
+
+  <section class="w-end w-reveal">
+    <h2>準備好出發了嗎？</h2>
+    <p class="lead">從一件你最喜歡的文物開始。</p>
+    <p><a class="btn primary big" href="/artifact">開始探險 🏛️</a> <a class="btn big" href="/era">先猜一個朝代</a></p>
+  </section>
 </main>
 <noscript><p style="text-align:center">需要開啟 JavaScript 才能使用互動功能。</p></noscript>
-<script src="/js/data.js?v=2"></script>
-<script src="/js/layout.js?v=2"></script>
-<script src="/js/fx.js?v=2"></script>
-<script src="/js/p-home.js?v=2"></script>
+<script src="/js/data.js?v=3"></script>
+<script src="/js/layout.js?v=3"></script>
+<script src="/js/fx.js?v=3"></script>
+<script src="/js/p-home.js?v=3"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 # 用法：bash tools/photo_loop.sh   （log 在 CACHE/img/loop.log）
 cd "$(dirname "$0")"
 LOG=/d/lun-museum-cache/img/loop.log
-alive() { python -c "import psutil,sys;sys.exit(0 if any((p.info['cmdline'] or [''])[-1].endswith('fetch_images.py') for p in psutil.process_iter(['cmdline'])) else 1)"; }
+alive() { python -c "import psutil,sys;sys.exit(0 if any(any(a.endswith('fetch_images.py') for a in (p.info['cmdline'] or [])) for p in psutil.process_iter(['cmdline'])) else 1)"; }  # 看全部參數：帶 --all 時最後一個不是檔名
 while true; do
   running=0; alive && running=1
   { date '+%m-%d %H:%M'; python -X utf8 build_images.py | tail -1; python -X utf8 -u upload_images.py | tail -2; } >> "$LOG" 2>&1

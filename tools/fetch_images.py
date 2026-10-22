@@ -5,7 +5,7 @@
 - 依朝代輪流抓：中途上線時各朝代都有圖
 - 可中斷續抓：檔案已存在就跳過
 - 對故宮客氣：一次最多 CONC 張、每批間隔 PAUSE 秒；遇到驗證頁或 403 就退避 1→2→4 分鐘，連續失敗就停並通知
-用法：python tools/fetch_images.py [--limit N] [--conc 3]
+用法：python tools/fetch_images.py [--limit N] [--conc 3] [--all]
 """
 import argparse
 import base64
@@ -57,17 +57,26 @@ def ntfy(msg):
         pass
 
 
-def todo_keys():
-    """出題池裡還沒抓的圖，依朝代輪流排。"""
+def todo_keys(all_items=False):
+    """出題池裡還沒抓的圖，依朝代輪流排。已上傳的也跳過：換電腦續抓時本機沒有原圖。
+    all_items：出題池抓完再抓池外的文物（外國、跨朝代、說明太短的），小百科和搜尋才有照片。"""
+    up = CACHE / "img" / "uploaded.txt"
+    uploaded = set(up.read_text("utf-8").split()) if up.exists() else set()
     by = collections.defaultdict(list)
+    rest = collections.defaultdict(list)  # 池外依分類輪流
     with open(CACHE / "build" / "items.jsonl", encoding="utf-8") as f:
         for line in f:
             r = json.loads(line)
-            if r["pool"] and not (SRC / f"{r['img']}.jpg").exists():
+            if not r["img"] or r["img"] in uploaded or (SRC / f"{r['img']}.jpg").exists():
+                continue
+            if r["pool"]:
                 by[r["grp"]].append(r["img"])
+            elif all_items:
+                rest[r.get("cat") or ""].append(r["img"])
     out = []
-    for group in itertools.zip_longest(*by.values()):
-        out.extend(k for k in group if k)
+    for d in (by, rest):
+        for group in itertools.zip_longest(*d.values()):
+            out.extend(k for k in group if k)
     return list(dict.fromkeys(out))
 
 
@@ -87,9 +96,10 @@ def main():
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--conc", type=int, default=3)
     ap.add_argument("--pause", type=float, default=1.0)
+    ap.add_argument("--all", action="store_true", help="出題池以外的文物也抓")
     a = ap.parse_args()
     SRC.mkdir(parents=True, exist_ok=True)
-    keys = todo_keys()
+    keys = todo_keys(a.all)
     if a.limit:
         keys = keys[: a.limit]
     log(f"開始：待抓 {len(keys)} 張，一次 {a.conc} 張，間隔 {a.pause} 秒")

@@ -80,7 +80,7 @@
   async function api(path, params) {
     const q = new URLSearchParams(params || {});
     for (const [k, v] of [...q]) if (v === "" || v == null) q.delete(k);
-    if (meta && path !== "/api/meta" && path !== "/api/pool") q.set("m", meta.photos);
+    if (meta && path !== "/api/meta" && path !== "/api/pool") q.set("m", meta.photosAll || meta.photos);
     const url = path + (q.toString() ? "?" + q : "");
     if (path !== "/api/pool" && memo.has(url)) return memo.get(url);
     const p = fetch(url).then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
@@ -115,7 +115,7 @@
   function placeholder(it, cls) {
     const d = document.createElement("div");
     d.className = "ph " + (cls || "");
-    d.innerHTML = '<span aria-hidden="true">' + (it.catInfo ? it.catInfo.emoji : "🏛️") + "</span><small>圖片整理中</small>";
+    d.innerHTML = '<span aria-hidden="true">' + (it.catInfo ? it.catInfo.emoji : "🏛️") + "</span><small>" + (it.img ? "圖片整理中" : "故宮未提供圖片") + "</small>";
     d.setAttribute("role", "img");
     d.setAttribute("aria-label", it.name || "文物");
     return d;

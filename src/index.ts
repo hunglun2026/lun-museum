@@ -9,7 +9,7 @@ export default {
   async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(req.url);
     if (url.pathname.startsWith("/api/")) return handleApi(url, env, ctx);
-    if (url.pathname.startsWith("/img/")) return serveImage(url, env, ctx);
+    if (/^\/img\/(600|240)\//.test(url.pathname)) return serveImage(url, env, ctx); // 文物照片在 R2；/img/help/ 這類是一般靜態檔
     if (url.pathname.startsWith("/admin/")) {
       // 管理端點一律要 Authorization: Bearer <ADMIN_TOKEN>
       if (!authed(req, env)) return new Response("unauthorized", { status: 401 });

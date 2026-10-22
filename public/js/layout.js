@@ -12,6 +12,7 @@
     ["archives", "史料探究", "/archives"],
     ["passport", "護照", "/passport"],
     ["teacher", "老師專區", "/teacher"],
+    ["help", "使用說明", "/help"],
   ];
   const page = document.body.dataset.page || "";
   const wrap = document.createElement("div");
