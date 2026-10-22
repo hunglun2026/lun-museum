@@ -39,12 +39,19 @@
     show("done");
   }
   if (guide) {
-    guide.querySelectorAll("[data-who]").forEach((b) => (b.onclick = () => {
-      who = b.dataset.who;
+    const pick = (w) => {
+      who = w;
       try { localStorage.setItem(GKEY, JSON.stringify({ who })); } catch (e) { /* 忽略 */ }
       document.getElementById("g-lvq").textContent = who === "teacher" ? "你教幾年級？" : "你幾年級？";
       guide.querySelectorAll("[data-lv]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.lv === Mu.level())));
       show("lv");
+    };
+    guide.querySelectorAll("[data-who]").forEach((b) => (b.onclick = () => pick(b.dataset.who)));
+    // 開場的「我是學生」「我是老師」：直接選好身分，捲到引導區問年級（沒有 JS 時就只是連到 #start）
+    document.querySelectorAll("[data-pick]").forEach((a) => (a.onclick = (e) => {
+      e.preventDefault();
+      pick(a.dataset.pick);
+      guide.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     }));
     guide.querySelectorAll("[data-lv]").forEach((b) => (b.onclick = () => {
       Mu.setLevel(b.dataset.lv);

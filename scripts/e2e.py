@@ -229,6 +229,16 @@ def main():
         back = pg.locator('[data-step="who"]').is_visible()
         check(recs == 3 and lvl == "j" and who == "學生・國中" and kept and back, f"引導入口：推薦 {recs} 個、難度 {lvl}、{who}、重新整理後記得 {kept}、重新選擇 {back}")
 
+        # 開場「我是學生」：直接選好身分、跳到問年級（不用再按第 1 題）
+        pg.evaluate("localStorage.removeItem('mu-guide')"); pg.goto(base + "/?cb=" + cb); ready(pg)
+        pg.click(".w-cta-row [data-pick=student]"); pg.wait_for_timeout(1200)
+        lvq = pg.locator("#g-lvq").inner_text() if pg.locator('[data-step="lv"]').is_visible() else ""
+        pg.click("[data-lv=e]"); pg.wait_for_timeout(300)
+        check(lvq == "你幾年級？" and pg.locator("#g-who").inner_text() == "學生・國小", f"開場我是學生：直接問「{lvq}」，選國小後推薦 {pg.locator('#g-who').inner_text()}")
+        pg.goto(base + "/?cb=" + cb); ready(pg); pg.click("[data-reset]")
+        pg.click(".w-cta-row [data-pick=teacher]"); pg.wait_for_timeout(1200)
+        check(pg.locator("#g-lvq").inner_text() == "你教幾年級？", "開場我是老師：直接問「你教幾年級？」")
+
         # 老師推薦的課程包連結直接打開課程包分頁
         pg.goto(base + "/teacher?cb=" + cb + "#guide"); ready(pg)
         check(pg.locator("#tab-guide").is_visible() and not pg.locator("#tab-sheet").is_visible(), "老師專區 #guide 直接打開課程包")
