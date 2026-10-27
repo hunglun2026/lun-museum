@@ -123,7 +123,7 @@ def main():
         marked = pg.locator(".tl-card.right, .tl-card.wrong").count()
         check(k == 4 and marked == 4 and pg.locator(".tl-line span").count() == 4, f"排排站國小：{k} 件、標記 {marked} 件、正確順序列出")
 
-        # 老師專區：學習單
+        # 教師專區：學習單
         pg.goto(base + "/teacher?cb=" + cb); ready(pg)
         pg.click("#gen"); pg.wait_for_selector("#sheet .q", timeout=30000); pg.wait_for_timeout(2000)
         qn = pg.locator("#sheet .q").count()
@@ -241,7 +241,7 @@ def main():
 
         # 老師推薦的課程包連結直接打開課程包分頁
         pg.goto(base + "/teacher?cb=" + cb + "#guide"); ready(pg)
-        check(pg.locator("#tab-guide").is_visible() and not pg.locator("#tab-sheet").is_visible(), "老師專區 #guide 直接打開課程包")
+        check(pg.locator("#tab-guide").is_visible() and not pg.locator("#tab-sheet").is_visible(), "教師專區 #guide 直接打開課程包")
 
         # 使用說明：截圖全部載入、目錄連結都對得到、導覽有連結
         pg.goto(base + "/help?cb=" + cb); ready(pg)

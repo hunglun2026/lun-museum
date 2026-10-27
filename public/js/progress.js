@@ -24,7 +24,7 @@ window.Progress = (function () {
   // 各遊戲在護照上顯示的名字（key 要跟各遊戲存星數用的一樣；難度另外記，例如 era-e）
   const GAMES = [
     ["era", "猜猜哪個朝代"], ["era-timed", "猜朝代・60 秒"], ["timeline", "朝代排排站"],
-    ["classify", "分類闖關"], ["classify-timed", "分類闖關・60 秒"], ["memory", "翻牌配對"],
+    ["classify", "分類闖關"], ["classify-timed", "分類闖關・60 秒"],
   ];
   const LV = { e: "國小", j: "國中", s: "高中" };
 
@@ -52,7 +52,6 @@ window.Progress = (function () {
       ["📏", "時間軸達人", "朝代排排站拿到三顆星", st("timeline") >= 3],
       ["⚡", "閃電快手", "任一個 60 秒挑戰拿到三顆星", st("era-timed") >= 3 || st("classify-timed") >= 3],
       ["🧩", "材質偵探", "分類闖關拿到三顆星", st("classify") >= 3],
-      ["🃏", "過目不忘", "翻牌配對拿到三顆星", st("memory") >= 3],
       ["🖼️", "小小策展人", "我的小展覽放了 5 件以上，而且每件都寫了解說牌", exhibitDone()],
       ["🎓", "高中挑戰者", "用高中難度在任一遊戲拿到三顆星", GAMES.some(([k]) => stLv(k, "s") >= 3)],
     ];

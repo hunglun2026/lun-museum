@@ -7,11 +7,10 @@
     ["era", "猜朝代", "/era"],
     ["timeline", "排排站", "/timeline"],
     ["classify", "分類闖關", "/classify"],
-    ["memory", "翻牌", "/memory"],
     ["exhibit", "小展覽", "/exhibit"],
     ["archives", "史料探究", "/archives"],
     ["passport", "護照", "/passport"],
-    ["teacher", "老師專區", "/teacher"],
+    ["teacher", "教師專區", "/teacher"],
     ["help", "使用說明", "/help"],
   ];
   const page = document.body.dataset.page || "";
