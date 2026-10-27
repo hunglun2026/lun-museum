@@ -61,7 +61,7 @@ Mu.boot(function (meta) {
       '<div><div class="dlg-bar"><button class="btn" id="x">關閉 ✕</button></div><div class="detail"><div id="big"></div><div>' +
       '<h2 style="margin-top:0">' + esc(it.name) + "</h2>" +
       // 白話介紹：有精選名品的 AI 改寫就用它（國小、國中），國小沒有改寫時用範本句；高中直接讀故宮原文
-      (it.ai_text && lv !== "s"
+      (it.ai_text && lv !== "__off__"
         ? '<div class="plain">' + esc(it.ai_text) + '<br><small class="credit">AI 改寫，內容依照下方故宮的說明</small></div>'
         : lv === "e" ? '<p class="plain">' + esc(Mu.plain(it)) + "</p>" : "") +
       '<div class="facts">' + facts.map((f) => '<div class="fact"><h4>' + esc(f[0]) + "</h4><p>" + esc(f[1]) + "</p></div>").join("") + "</div>" +

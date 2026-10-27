@@ -10,7 +10,7 @@
     era: { name: "哪個朝代", ok: (it) => !!it.grp },
     cat: { name: "屬於哪一類", ok: () => true },
     picture: { name: "看圖選名稱", ok: (it) => !!it.photo },
-    reign: { name: "哪個年號（高中）", ok: (it, lv) => lv === "s" && !!Mu.reignInfo(it.dyn, it.reign) },
+    reign: { name: "哪個年號（高中）", ok: (it, lv) => lv === "__off__" && !!Mu.reignInfo(it.dyn, it.reign) },
   };
 
   // 時間上離 ans 最近的 k 個朝代群（國小隨機）

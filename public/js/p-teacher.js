@@ -27,7 +27,7 @@ Mu.boot(function (meta) {
       Mu.LEVELS[lv].groups.filter((g) => meta.pool[g]).map((g) => '<option value="' + esc(g) + '">' + esc(Mu.gname(g)) + "</option>").join("");
     $("cat").innerHTML = '<option value="">全部分類</option>' +
       Mu.CATS.filter((c) => meta.cats[c.id]).map((c) => '<option value="' + c.id + '">' + c.emoji + " " + esc(c.name) + "</option>").join("");
-    const kinds = [["mix", "混合題型"]].concat(Object.entries(Qgen.KINDS).filter(([k]) => k !== "reign" || lv === "s").map(([k, v]) => [k, v.name]));
+    const kinds = [["mix", "混合題型"]].concat(Object.entries(Qgen.KINDS).filter(([k]) => k !== "reign" || lv === "__off__").map(([k, v]) => [k, v.name]));
     $("kind").innerHTML = kinds.map((k) => '<option value="' + k[0] + '">' + esc(k[1]) + "</option>").join("");
     if ([...$("grp").options].some((o) => o.value === keep.grp)) $("grp").value = keep.grp;
     if ([...$("kind").options].some((o) => o.value === keep.kind)) $("kind").value = keep.kind;
@@ -39,7 +39,7 @@ Mu.boot(function (meta) {
     const lv = Mu.level();
     const n = +$("num").value;
     const kind = $("kind").value;
-    const types = kind === "mix" ? Object.keys(Qgen.KINDS).filter((k) => k !== "reign" || lv === "s") : [kind];
+    const types = kind === "mix" ? Object.keys(Qgen.KINDS).filter((k) => k !== "reign" || lv === "__off__") : [kind];
     const pool = await Qgen.fetchPool({ lv, grp: $("grp").value, cat: $("cat").value, n, reign: types.includes("reign"), onlyReign: kind === "reign" });
     return Qgen.make(pool, types, n, lv);
   }

@@ -58,11 +58,12 @@
     return i >= 0 && i < list.length - 1 ? { name, y0: list[i][1], y1: list[i + 1][1] - 1, list: list.slice(0, -1).map((r) => r[0]) } : null;
   }
 
-  // ---- 三級難度（GrillMe 第 6 題）。存在 localStorage，頁首可切換 ----
+  // ---- 三個年級（跟動物探險家一樣：低、中、高年級）。存在 localStorage，頁首可切換 ----
+  // 低年級最簡單：只出 3 個朝代、三選一，而且有注音；中年級是原本的國小難度；高年級是原本的國中難度。
   const LEVELS = {
-    e: { name: "國小", groups: ["新石器時代", "漢", "唐", "宋", "明", "清"], choices: 3 },
-    j: { name: "國中", groups: GROUPS.map((g) => g.id).filter((g) => g !== "民國"), choices: 4 },
-    s: { name: "高中", groups: GROUPS.map((g) => g.id), choices: 4 },
+    e: { name: "低年級", groups: ["漢", "唐", "清"], choices: 3 },
+    j: { name: "中年級", groups: ["新石器時代", "漢", "唐", "宋", "明", "清"], choices: 3 },
+    s: { name: "高年級", groups: GROUPS.map((g) => g.id).filter((g) => g !== "民國"), choices: 4 },
   };
   const LKEY = "mu-level";
   function level() {

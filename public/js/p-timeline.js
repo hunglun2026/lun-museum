@@ -1,9 +1,9 @@
 /* 朝代排排站：每回合幾件不同朝代的文物，依「最早到最晚」點下去排順序。
-   用點的不用拖：平板上拖曳容易誤觸。國小 4 件、國中 5 件、高中 6 件，共 5 回合。 */
+   用點的不用拖：平板上拖曳容易誤觸。低年級 3 件、中年級 4 件、高年級 5 件，共 5 回合。 */
 Mu.boot(function () {
   const { esc, el, shuffle } = Mu;
   const root = document.getElementById("game");
-  const SIZE = { e: 4, j: 5, s: 6 };
+  const SIZE = { e: 3, j: 4, s: 5 };
   const ROUNDS = 5;
 
   async function fetchRound(lv) {
@@ -15,7 +15,7 @@ Mu.boot(function () {
   function menu() {
     const lv = Mu.level();
     document.getElementById("intro").textContent = "每回合有 " + SIZE[lv] + " 件不同朝代的文物，從最早的開始，依序點下去。共 " + ROUNDS + " 回合。";
-    root.replaceChildren(el('<div class="stage"><h2>目前難度：' + esc(Mu.LEVELS[lv].name) + '</h2><p>可以在右上角換難度。</p><p><button class="btn primary big" id="go">開始排排站</button></p></div>'));
+    root.replaceChildren(el('<div class="stage"><h2>目前年級：' + esc(Mu.LEVELS[lv].name) + '</h2><p>可以在右上角換年級。</p><p><button class="btn primary big" id="go">開始排排站</button></p></div>'));
     root.querySelector("#go").onclick = () => play(lv);
   }
 

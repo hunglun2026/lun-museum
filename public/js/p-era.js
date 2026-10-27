@@ -15,14 +15,14 @@ Mu.boot(function () {
     const lv = Mu.level();
     const groups = Mu.LEVELS[lv].groups.filter((g) => Mu.meta.pool[g]);
     const per = Math.max(2, Math.ceil(n / groups.length) + 1);
-    const lists = await Promise.all(groups.map((g) => Mu.pool({ grp: g, k: per, reign: lv === "s" && (g === "明" || g === "清") ? "1" : "" })));
+    const lists = await Promise.all(groups.map((g) => Mu.pool({ grp: g, k: per, reign: lv === "__off__" && (g === "明" || g === "清") ? "1" : "" })));
     const items = shuffle([].concat(...lists.map((l) => shuffle(l).slice(0, per)))).slice(0, n);
     return items.map((it) => build(it, lv, groups));
   }
 
   function build(it, lv, groups) {
     const head = '這件<b>' + esc(it.catInfo.name) + "</b>「" + esc(Mu.maskName(it)) + "」";
-    const ri = lv === "s" ? Mu.reignInfo(it.dyn, it.reign) : null;
+    const ri = lv === "__off__" ? Mu.reignInfo(it.dyn, it.reign) : null;
     if (ri) {
       const opts = Qgen.reignChoices(ri);
       return {
@@ -48,7 +48,7 @@ Mu.boot(function () {
     const lv = Mu.level();
     document.getElementById("intro").textContent = INTRO[lv];
     root.replaceChildren(el(
-      '<div class="stage"><h2>目前難度：' + esc(Mu.LEVELS[lv].name) + '</h2><p>可以在右上角換難度。</p>' +
+      '<div class="stage"><h2>目前年級：' + esc(Mu.LEVELS[lv].name) + '</h2><p>可以在右上角換年級。</p>' +
       '<p><button class="btn primary big" id="go10">開始（10 題）</button> <button class="btn big" id="go60">⏱️ 60 秒挑戰</button></p></div>'
     ));
     root.querySelector("#go10").onclick = () => start(false);
