@@ -33,11 +33,8 @@
   const foot = document.createElement("footer");
   foot.className = "foot";
   foot.innerHTML =
-    '<p>文物資料：國立故宮博物院，臺北，CC BY 4.0 @ <a href="https://www.npm.gov.tw/" target="_blank" rel="noopener">www.npm.gov.tw</a>。' +
-    '經<a href="https://data.gov.tw/" target="_blank" rel="noopener">政府資料開放平臺</a>取得。' +
-    "文物圖片為故宮開放之低階圖像（公眾領域貢獻宣告 CC0），由本站縮小後存放。本站非國立故宮博物院製作。</p>" +
-    '<p id="data-stamp">資料載入中…</p>' +
-    "<p>鴻綸科技 製作。本站不蒐集任何個人資料，學習進度只存在這台裝置的瀏覽器裡。</p>";
+    "<p>由政府資料獲取</p>" +
+    '<p id="data-stamp" hidden></p>';
   wrap.appendChild(foot);
 
   // Mu.boot(fn)：載入 meta 後呼叫 fn(meta)，處理載入中與失敗畫面
