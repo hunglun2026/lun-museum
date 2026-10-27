@@ -3,15 +3,11 @@
   "use strict";
   const NAV = [
     ["artifact", "小百科", "/artifact"],
-    ["search", "搜尋", "/search"],
     ["era", "猜朝代", "/era"],
     ["timeline", "排排站", "/timeline"],
     ["classify", "分類闖關", "/classify"],
-    ["exhibit", "小展覽", "/exhibit"],
-    ["archives", "史料探究", "/archives"],
     ["passport", "護照", "/passport"],
     ["teacher", "教師專區", "/teacher"],
-    ["help", "使用說明", "/help"],
   ];
   const page = document.body.dataset.page || "";
   const wrap = document.createElement("div");

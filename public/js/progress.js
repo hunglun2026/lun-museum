@@ -52,7 +52,6 @@ window.Progress = (function () {
       ["📏", "時間軸達人", "朝代排排站拿到三顆星", st("timeline") >= 3],
       ["⚡", "閃電快手", "任一個 60 秒挑戰拿到三顆星", st("era-timed") >= 3 || st("classify-timed") >= 3],
       ["🧩", "材質偵探", "分類闖關拿到三顆星", st("classify") >= 3],
-      ["🖼️", "小小策展人", "我的小展覽放了 5 件以上，而且每件都寫了解說牌", exhibitDone()],
       ["🎓", "高中挑戰者", "用高中難度在任一遊戲拿到三顆星", GAMES.some(([k]) => stLv(k, "s") >= 3)],
     ];
     return badge.map(([icon, name, how, got]) => ({ icon, name, how, got }));
