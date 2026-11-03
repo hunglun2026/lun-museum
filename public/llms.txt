@@ -1,0 +1,21 @@
+# 故宮探險家
+
+> 跟著故宮的文物，從新石器時代走到清朝，看懂每一件寶貝的故事。
+
+鴻綸科技（https://www.hunglun.com/）製作的免費學習網站，免註冊、免安裝，收錄於官網學習專區 https://www.hunglun.com/tools/games 。
+
+## 頁面
+- [史料探究](https://museum.hunglun.com/archives): 用故宮 39.6 萬件清代檔案做歷史探究：選主題看每十年有幾份奏摺、誰寫最多，點進去讀原件目錄。適合高中歷史。
+- [文物小百科](https://museum.hunglun.com/artifact): 依分類與朝代瀏覽國立故宮博物院的文物照片與說明，國小版附白話介紹。
+- [分類闖關](https://museum.hunglun.com/classify): 看故宮文物照片，分出陶瓷、玉器、銅器、琺瑯、漆器。低、中、高年級三種難度，還有 60 秒挑戰。
+- [猜猜哪個朝代](https://museum.hunglun.com/era): 看故宮文物的照片，猜它是哪個朝代做的。國小、國中、高中三種難度，還有 60 秒挑戰。
+- [我的小展覽](https://museum.hunglun.com/exhibit): 挑選故宮文物、寫解說牌，策劃自己的小展覽，可以列印或投影發表。
+- [使用說明](https://museum.hunglun.com/help): 故宮探險家使用說明：老師 3 分鐘上手、三種上課方式、三種難度的差別、每個工具怎麼用、學習單與搶答計分板、學生與家長、資料來源與常見問題。
+- [故宮探險家](https://museum.hunglun.com/home): 用國立故宮博物院開放資料做的教學網站：10.9 萬件文物與 39.6 萬件清代檔案，猜朝代、排時間軸、分類闖關、印學習單。低、中、高年級三種難度，免註冊、免安裝。
+- [故宮探險家](https://museum.hunglun.com/): 跟著故宮的文物，從新石器時代走到清朝，看懂每一件寶貝的故事。
+- [翻牌配對](https://museum.hunglun.com/memory): 把故宮文物的照片和名稱配成一對。國小 6 對、國中 8 對，高中整盤同一類更難。
+- [資料開放宣告](https://museum.hunglun.com/open-data): 故宮探險家的資料來源、授權方式與著作權說明。
+- [探險護照](https://museum.hunglun.com/passport): 看過的故宮文物、各遊戲拿到的星星與徽章，只存在這台裝置。
+- [典藏搜尋](https://museum.hunglun.com/search): 搜尋國立故宮博物院約 10.9 萬件文物與 39.6 萬件清代檔案，例如青花、玉璧、乾隆、臺灣。
+- [教師專區](https://museum.hunglun.com/teacher): 一鍵產生可列印的故宮文物學習單與答案、投影出題、全班搶答計分板與倒數計時器。國小、國中、高中三種難度。
+- [朝代排排站](https://museum.hunglun.com/timeline): 把故宮文物依朝代先後排好順序，國小 4 件、國中 5 件、高中 6 件。
